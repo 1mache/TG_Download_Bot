@@ -1,6 +1,8 @@
+import os
 import telebot
 from pytube import YouTube
 
+DIR_PATH = os.getcwd()
 with open("key.txt", "r") as file:
     BOT_KEY = file.read()
 
@@ -9,15 +11,14 @@ bot = telebot.TeleBot(BOT_KEY)
 #=================\FUNCTIONS/===============
     
 def download(chat_id, stream):
-    print(f"Request for {stream.title}")
     if(stream.includes_video_track):
         fname = f"{chat_id}_video.mp4"
-        stream.download(filename = fname)
-        bot.send_video(chat_id, video = open(fname, "rb"))
+        stream.download(output_path = f"{DIR_PATH}/downloads",filename = fname)
+        bot.send_video(chat_id, video = open(f"{DIR_PATH}/downloads/{fname}", "rb"))
     else:
         fname = f"{chat_id}_audio.mp3"
-        stream.download(filename = f"{chat_id}_audio.mp3")
-        bot.send_audio(chat_id, audio = open(fname, "rb"),title = stream.title, thumb= open("audio_pic.jpg", "rb"))
+        stream.download(output_path = f"{DIR_PATH}/downloads",filename = fname)
+        bot.send_audio(chat_id, audio = open(f"{DIR_PATH}/downloads/{fname}", "rb"),title = stream.title, thumb= open("logo.jpg", "rb"))
 
 #=================\BOT HANDLERS/=================
 @bot.message_handler(commands=['start', 'help'])   
@@ -44,6 +45,8 @@ def get_link(message):
 
 @bot.callback_query_handler(lambda call: "_*format" in call.data)
 def format_callback(call):
+    print(f"Request for {stream.title}")
+    
     data_list = call.data.split("_")
     chat_id = call.message.chat.id
     url = data_list[0]

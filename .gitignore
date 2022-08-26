@@ -1,5 +1,5 @@
 .venv/
 key.txt
 test.py
-*.mp3
-*.mp4
+downloads/
+asyncio_test.py
