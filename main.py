@@ -49,7 +49,6 @@ def get_link(message):
         bot.send_message(message.chat.id ,"Sorry, the video is age restricted")
         return
 
-
     mp3_button = telebot.types.InlineKeyboardButton("audio(mp3)", callback_data= f"{mtext}_0_*format")
     mp4_button = telebot.types.InlineKeyboardButton("video(mp4)", callback_data= f"{mtext}_1_*format")
     keyboard = telebot.types.InlineKeyboardMarkup([[mp3_button, mp4_button]])
