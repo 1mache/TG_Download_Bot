@@ -2,6 +2,7 @@ import os
 import telebot
 import my_types
 from pytube import YouTube
+from pytube import exceptions as pytube_e
 
 DIR_PATH = os.getcwd()
 with open("key.txt", "r") as file:
@@ -41,9 +42,13 @@ def get_link(message):
     try:
         yt = YouTube(mtext)
         img_data = yt.thumbnail_url
-    except:
+    except pytube_e.RegexMatchError:
         bot.send_message(message.chat.id ,"Not a link. Please send a valid link")
         return
+    except pytube_e.AgeRestrictedError:
+        bot.send_message(message.chat.id ,"Sorry, the video is age restricted")
+        return
+
 
     mp3_button = telebot.types.InlineKeyboardButton("audio(mp3)", callback_data= f"{mtext}_0_*format")
     mp4_button = telebot.types.InlineKeyboardButton("video(mp4)", callback_data= f"{mtext}_1_*format")
