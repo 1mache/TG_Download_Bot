@@ -1,16 +1,20 @@
 import os
 import telebot
+import my_types
 from pytube import YouTube
 
 DIR_PATH = os.getcwd()
 with open("key.txt", "r") as file:
     BOT_KEY = file.read()
 
-bot = telebot.TeleBot(BOT_KEY)
-
-#=================\FUNCTIONS/===============
+bot = telebot.TeleBot(BOT_KEY)    
     
-def download(chat_id, stream):
+#=================\FUNCTIONS/===============
+def download(download_obj):
+    stream = download_obj.stream
+    chat_id = download_obj.chat_id
+    info_message = download_obj.info_message
+
     if(stream.includes_video_track):
         fname = f"{chat_id}_video.mp4"
         stream.download(output_path = f"{DIR_PATH}/downloads",filename = fname)
@@ -19,6 +23,10 @@ def download(chat_id, stream):
         fname = f"{chat_id}_audio.mp3"
         stream.download(output_path = f"{DIR_PATH}/downloads",filename = fname)
         bot.send_audio(chat_id, audio = open(f"{DIR_PATH}/downloads/{fname}", "rb"),title = stream.title, thumb= open("logo.jpg", "rb"))
+    
+    if(info_message is not None): 
+        bot.delete_message(chat_id, info_message.message_id)
+    os.remove(f"{DIR_PATH}/downloads/{fname}")
 
 #=================\BOT HANDLERS/=================
 @bot.message_handler(commands=['start', 'help'])   
@@ -45,24 +53,24 @@ def get_link(message):
 
 @bot.callback_query_handler(lambda call: "_*format" in call.data)
 def format_callback(call):
-    print(f"Request for {stream.title}")
     
-    data_list = call.data.split("_")
+    data_list = call.data.split("_") #splits callback string into list of data
     chat_id = call.message.chat.id
     url = data_list[0]
     # 0 - audio , 1 - video
     format = int(data_list[1])
 
     yt = YouTube(url)
-    
+    print(f"Request for {yt.title}") #debug
+    info_message = bot.send_message(chat_id, "Downloading...")
+
     if(format == 0):
         stream = yt.streams.get_audio_only()
     elif(format == 1):
         stream = yt.streams.get_highest_resolution()
-    else:
-        raise RuntimeError("Inline format error")
     
-    download(chat_id, stream)
+    download_obj = my_types.Download(chat_id, stream, info_message=info_message)
+    download(download_obj)
         
 #=============================================
 if __name__ == '__main__':

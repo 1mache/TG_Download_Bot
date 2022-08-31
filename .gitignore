@@ -2,4 +2,4 @@
 key.txt
 test.py
 downloads/
-asyncio_test.py
+__pycache__/
