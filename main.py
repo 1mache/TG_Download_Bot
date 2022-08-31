@@ -66,7 +66,7 @@ def format_callback(call):
 
     yt = YouTube(url)
     print(f"Request for {yt.title}") #debug
-    info_message = bot.send_message(chat_id, "Downloading...")
+    info_message = bot.send_message(chat_id, "Downloading...Please wait")
 
     if(format == 0):
         stream = yt.streams.get_audio_only()
