@@ -1,6 +1,5 @@
 import os
 import telebot
-import my_types
 from pytube import YouTube
 from pytube import exceptions as pytube_e
 
@@ -11,10 +10,7 @@ with open("key.txt", "r") as file:
 bot = telebot.TeleBot(BOT_KEY)    
     
 #=================\FUNCTIONS/===============
-def download(download_obj):
-    stream = download_obj.stream
-    chat_id = download_obj.chat_id
-    info_message = download_obj.info_message
+def download(stream, chat_id, info_message):
 
     if(stream.includes_video_track):
         fname = f"{chat_id}_video.mp4"
@@ -73,8 +69,7 @@ def format_callback(call):
     elif(format == 1):
         stream = yt.streams.get_highest_resolution()
     
-    download_obj = my_types.Download(chat_id, stream, info_message=info_message)
-    download(download_obj)
+    download(chat_id, stream, info_message)
         
 #=============================================
 if __name__ == '__main__':
