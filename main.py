@@ -69,7 +69,7 @@ def format_callback(call):
     elif(format == 1):
         stream = yt.streams.get_highest_resolution()
     
-    download(chat_id, stream, info_message)
+    download(stream, chat_id, info_message)
         
 #=============================================
 if __name__ == '__main__':
